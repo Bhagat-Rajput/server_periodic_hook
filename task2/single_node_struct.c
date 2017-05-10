@@ -6,7 +6,6 @@ struct node{
 	char attr_name[15];
 	char attr_value[20];
 	char resc_name[40];
-	//int data;
 	struct node *next;
 	struct node *prev;
 };
@@ -17,9 +16,6 @@ struct node* get_node(char *attr_data[3]) {
 	strcpy(new_node->attr_name,attr_data[0]);
 	strcpy(new_node->attr_value,attr_data[1]);
 	strcpy(new_node->resc_name,attr_data[2]);
-	//new_node->attr_name = attr_data[0];
-	//new_node->attr_value = attr_data[1];
-	//new_node->resc_name = attr_data[2]; 
 	new_node->prev = NULL;
 	new_node->next = NULL;
 	return new_node;
@@ -27,13 +23,12 @@ struct node* get_node(char *attr_data[3]) {
 
 void insert(char *attr_data[3]) {
 	struct node* temp = head;
-//	printf("\nnode name= %s",attr_data[0]);
 	struct node* new_node = get_node(attr_data);
 	if(head == NULL) {
 		head = new_node;
 		return;
 	}
-	while(temp->next != NULL) temp = temp->next; // Go To last Node
+	while(temp->next != NULL) temp = temp->next;
 	temp->next = new_node;
 	new_node->prev = temp;
 }
@@ -44,8 +39,8 @@ void print() {
 		printf("Attr_Name = %s  Attr_Value = %s   Resc_Name = %s\n",temp->attr_name,temp->attr_value,temp->resc_name);
 		temp = temp->next;
 	}
-//	printf("\n");
 }
+
 int main(){
 	FILE *fp;
 	static char data [50];
@@ -75,10 +70,8 @@ int main(){
                         i++;
                 }
                 else{
-			//printf("DATA = %s",data);
 			token = strtok(data,"=");
 			while(token != NULL ){	
-                        	//printf("\nToken = %s",token);
 				if(flag){
 					attr_data[0] = "Mom_Name";
 					attr_data[1] = token; 
@@ -141,7 +134,7 @@ int main(){
 						insert(attr_data);
 					}
 				}
-				else if(strncmp(data,attr_names[5],24)== 0){
+				else if(strncmp(data,attr_names[5],23)== 0){
 					if(per == 0){
 						attr_data[2] = token;		
 						per++;
@@ -157,7 +150,6 @@ int main(){
                       	i = 0;
 			per = 0;
                         memset(&data[0], 0, sizeof(data));
-		//	printf("\n");
                 }
         }
         fclose(fp);
