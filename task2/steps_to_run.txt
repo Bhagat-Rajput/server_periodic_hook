@@ -1,0 +1,6 @@
+/* Follow these steps to run this program. */
+1)swig -python single_node_interface.i
+2)gcc -c single_node_struct.c single_node_interface_wrap.c -fPIC -I /usr/include/python2.7/
+3)ld -shared single_node_struct.o single_node_interface_wrap.o -o _single_node_interface.so
+4)gcc single_node_struct.c
+5)./a.out
