@@ -7,9 +7,9 @@
 
 struct node* get_node(char *attr_data[3]) {
 	struct node* new_node = (struct node*)malloc(sizeof(struct node));
-	strcpy(new_node->attr_name,attr_data[0]);
-	strcpy(new_node->attr_value,attr_data[1]);
-	strcpy(new_node->resc_name,attr_data[2]);
+	strncpy(new_node->attr_name,attr_data[0],sizeof(new_node->attr_name));
+	strncpy(new_node->attr_value,attr_data[1],sizeof(new_node->attr_value));
+	strncpy(new_node->resc_name,attr_data[2],sizeof(new_node->resc_name));
 	new_node->prev = NULL;
 	new_node->next = NULL;
 	return new_node;
@@ -27,12 +27,8 @@ void insert(char *attr_data[3]) {
 	new_node->prev = temp;
 }
 
-void print_result() {
-	struct node* temp = head;
-	while(temp != NULL) {
-		printf("Attr_Name = %s  Attr_Value = %s   Resc_Name = %s\n",temp->attr_name,temp->attr_value,temp->resc_name);
-		temp = temp->next;
-	}
+struct node *print_result() {
+	return head;
 }
 
 int file_read(){
@@ -168,7 +164,6 @@ file_read();
 int x;
 pid_t pid = fork();
         if(pid==0){
-                printf("Child process called\n");
                 x = execl("./python_file.py", "python_file.py", NULL);
                 if(x==-1){
                         perror("./python_file.py");
@@ -176,6 +171,5 @@ pid_t pid = fork();
         }
         else{
                 wait();
-                printf("Parent Process called\n");
         }
 }

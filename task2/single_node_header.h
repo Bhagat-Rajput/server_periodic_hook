@@ -8,5 +8,5 @@ struct node{
 struct node* head,temp;
 struct node* get_node(char *attr_data[3]);
 void insert(char *attr_data[3]);
-void print_result();
+struct node *print_result();
 int file_read();
