@@ -4,15 +4,15 @@ blrpc676-centos7-1
      state = free
      pcpus = 4
      resources_available.arch = linux
-     resources_available.host = blrpc676-centos7-1
      resources_available.mem = 3865552kb
      resources_available.ncpus = 4
-     resources_available.vnode = blrpc676-centos7-1
-     resources_assigned.accelerator_memory = 0kb
-     resources_assigned.mem = 0kb
-     resources_assigned.naccelerators = 0
-     resources_assigned.ncpus = 0
-     resources_assigned.vmem = 0kb
-     resv_enable = True
-     sharing = default_shared
+
+blrpc676-centos7-2
+     Mom = blrpc676-centos7-2
+     ntype = PBS
+     state = free
+     pcpus = 4
+     resources_available.arch = linux
+     resources_available.mem = 3865552kb
+     resources_available.ncpus = 10
 
