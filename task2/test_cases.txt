@@ -1,0 +1,8 @@
+/* Test cases */
+
+1. if file not found 
+2. if file is empty 
+3. allocated memory should be free
+4. pointer validation
+5. handling fork process
+6. if file has more or less attributes 

@@ -1,5 +1,6 @@
+/*! swig interface file */
 %module single_node_interface
- /* Put header files here or function declarations like below */
+ /* Put header files or function declarations here */
 %{
  #include "single_node_header.h"
 %}

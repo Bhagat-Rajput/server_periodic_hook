@@ -1,15 +1,24 @@
+/**
+ * @file    single_node_header.h
+ *
+ * @brief
+ * Single node interface. (Functions declarations and structures)
+ *
+ * This header file contains functions to access the single node structure 
+ */
 #ifndef _SINGLE_NODE_HEADER_H_
 #define _SINGLE_NODE_HEADER_H_
 struct node{
-        char attr_name[15];
-        char attr_value[20];
-        char resc_name[40];
-        struct node *next;
-        struct node *prev;
+        char node_attr_name[15];
+        char node_attr_value[20];
+        char node_resc_name[40];
+        struct node *node_next;
+        struct node *node_prev;
 };
-struct node *get_node(char *attr_data[3]);
-struct node *get_head();
+typedef struct node node_t;
+node_t *get_head();
+node_t *get_node(char *attr_data[3]);
 extern int insert (char *attr_data[3]);
 extern int file_read();
 extern void free_memory();
-#endif
+#endif /* _SINGLE_NODE_HEADER_H_ */

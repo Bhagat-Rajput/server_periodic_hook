@@ -1,3 +1,4 @@
+/*!header files */
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdbool.h>
@@ -5,24 +6,27 @@
 #include<unistd.h>
 #include"single_node_header.h"
 
-struct node *head;
+node_t *head; /*! head node */
+
 /**
  * @brief
- * get_node() - creates a new node and filled the node
+ * get_node() - create a new node and filled the node
  * @param[in] attr_data - char pointer array holding information to be inserted
  * @return struct node* - structure that contains file attributes
  */
-struct node* get_node(char *attr_data[3]) {
-	struct node* new_node = (struct node*)malloc(sizeof(struct node));
+node_t * 
+get_node(char *attr_data[3]) 
+{
+	node_t *new_node = (node_t *)malloc(sizeof(node_t));/*!allocating memory to node*/
 	if(new_node == NULL){
 		printf("Couldn't allocate memory\n");
 		return NULL;
 	}
-	strncpy(new_node->attr_name, attr_data[0], sizeof(new_node->attr_name));
-	strncpy(new_node->attr_value, attr_data[1], sizeof(new_node->attr_value));
-	strncpy(new_node->resc_name, attr_data[2], sizeof(new_node->resc_name));
-	new_node->prev = NULL;
-	new_node->next = NULL;
+	strncpy(new_node->node_attr_name, attr_data[0], sizeof(new_node->node_attr_name)); /*!copying attribute name */
+	strncpy(new_node->node_attr_value, attr_data[1], sizeof(new_node->node_attr_value)); /*copying attribute value */
+	strncpy(new_node->node_resc_name, attr_data[2], sizeof(new_node->node_resc_name)); /* copying resource name */
+	new_node->node_prev = NULL;
+	new_node->node_next = NULL;
 	return new_node;
 }
 
@@ -33,20 +37,22 @@ struct node* get_node(char *attr_data[3]) {
  * @return 0 - success
  * @return 1 - failure
  */
-int insert(char *attr_data[3]) {
-	struct node* temp = head;
-	struct node* new_node = get_node(attr_data);
+int 
+insert(char *attr_data[3]) 
+{
+	node_t *temp = head;
+	node_t *new_node = get_node(attr_data);
 	if(new_node == NULL){
 		return 1;
 	}
-	if(head == NULL) {
+	if(head == NULL){  /*for first node only */
 		head = new_node;
 		return;
 	}
-	while(temp->next != NULL) temp = temp->next;
-	temp->next = new_node;
-	new_node->prev = temp;
-return 0;
+	while(temp->node_next != NULL) temp = temp->node_next;
+	temp->node_next = new_node;
+	new_node->node_prev = temp;
+	return 0;
 }
 
 /**
@@ -55,7 +61,9 @@ return 0;
  * @param[in]   void - No argument
  * @return struct node* - head node
  */
-struct node *get_head() {
+node_t *
+get_head(void) 
+{
 	return head;
 }
 
@@ -65,7 +73,9 @@ struct node *get_head() {
  * @param[in]   void - No argument
  * @return 1 - if file is empty or not found
  */
-int file_read(){
+int
+file_read(void)
+{
 	FILE *fp;
 	static char data [50]; /*!store char from file */
 	char ch;/*!read char from file */
@@ -92,15 +102,16 @@ int file_read(){
 		return 1;
 	}
 	rewind(fp); /*!sets the file pointer position to the beginning of the file */
-        memset(&data[0], 0, sizeof(data));
+        memset(&data[0], 0, sizeof(data)); /*!fill data array with 0*/
         while ((ch = getc(fp)) != EOF){
-                if(ch == ' ')
+                if(ch == ' '){
                         continue;
-                else if(ch != '\n'){
+		}
+		else if(ch != '\n'){
                         data[char_pos] = ch;
                         char_pos++;
                 }
-                else{
+		else{
 			token = strtok(data,"="); /*!name and value tokenization */
 			while(token != NULL ){	
 				if(flag){
@@ -208,17 +219,16 @@ int file_read(){
 						if((insert(attr_data)) == 1){
 							return 1;
 						}
-						flag = true;
 					}
 				}	
 	 			token = strtok(NULL,"=");	
 			}
                       	char_pos = 0;
 			perms = 0;
-                        memset(&data[0], 0, sizeof(data));
+                        memset(&data[0], 0, sizeof(data)); /*!fill data array with 0 */
                 }
         }
-        fclose(fp);
+        fclose(fp);/*!file pointer closed */
 return 0;
 }
 
@@ -228,12 +238,14 @@ return 0;
  * @param[in]   void - No argument
  * @return void
  * */
-void free_memory(){
-	struct node *temp, *curr;
+void
+free_memory(void)
+{
+	node_t *temp, *curr;
         curr = get_head();
         while(curr != NULL){
         	temp = curr;
-                curr = curr->next;
+                curr = curr->node_next;
                 free(temp);
                 temp = NULL;
         }
@@ -246,13 +258,15 @@ void free_memory(){
  * @return 0 - for success
  * @return 1 - for failure
  */
-int main(){
-	int x;
+int 
+main(void)
+{
+	int tmp_x;
 	pid_t pid = fork();/*!fork() is used to create a new process */
         if(pid == 0){
 		/*!child process */
-                x = execl("./python_file.py", "python_file.py", NULL);/*!execl()- initiates a new program in the same environment*/
-                if(x == -1){
+                tmp_x = execl("./python_file.py", "python_file.py", NULL);/*!execl()- initiates a new program in the same environment*/
+                if(tmp_x == -1){
                         perror("./python_file.py");
 			return 1;
                 }
