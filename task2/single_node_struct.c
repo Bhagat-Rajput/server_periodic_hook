@@ -7,6 +7,7 @@
 #include"single_node_header.h"
 
 node_t *head; /*! head node */
+static char *attr_names[20]; /*!for storing attribute list*/
 
 /**
  * @brief
@@ -69,9 +70,74 @@ get_head(void)
 
 /**
  * @brief
+ * get_attr_list() - reading file attributes
+ * @param[in]   void - No argument
+ * @return 1 - if file is empty or not found
+ * @return 0 - success
+ */
+int
+get_attr_list(void)
+{
+	int i;
+	FILE *fp;
+	char data [50]; /*!store char from file */
+	char ch;/*!read char from file */
+	char *token;/*store the token pointer  */
+	int char_pos = 0, attr_pos = 0; /**/
+	bool flag = true; /*flag is a bool variable which will be used to end the loop */
+	fp = fopen("pbsnodes.txt", "r"); /*!opening file in read mode. */
+	if(fp == NULL){
+		printf("Could not open file or File is missing\n");
+		return 1;
+	}
+	fseek(fp ,0 ,SEEK_END);/*!sets the file pointer position to the given offset */
+	if(ftell(fp) == 0){
+		printf("File is Empty\n");
+		return 1;
+	}
+	rewind(fp); /*!sets the file pointer position to the beginning of the file */
+	memset(&data[0], 0, sizeof(data)); /*!fill data array with 0*/
+	while ((ch = getc(fp)) != EOF){
+		if(ch == ' '){
+			continue;
+		}
+		else if(ch != '\n'){
+			data[char_pos] = ch;
+			char_pos++;
+		}
+		else{
+			if(strchr(data,'=') != NULL){
+				token = strtok(data,"="); /*!name and value tokenization */
+				while(token != NULL ){	
+					if(flag){
+						for ( i = 0; i < attr_pos; i++ ){ /*checks attribute is present in attribute list or not */
+							if ( strcmp(attr_names[i],token) == 0 ){
+								goto skip;
+							}
+						}	
+				 		attr_names[attr_pos]=(char *)malloc(25*sizeof(char));
+				 		strcpy(attr_names[attr_pos],token);
+				 		attr_pos++;
+				 		flag = false;
+					}
+					token = strtok(NULL,"=");	
+				}
+				flag = true;
+			}
+			skip:char_pos = 0;
+			memset(&data[0], 0, sizeof(data)); /*!fill data array with 0 */
+		}
+	}
+	fclose(fp);/*!file pointer closed */
+return 0;
+}
+
+/**
+ * @brief
  * file_read() - reading file data
  * @param[in]   void - No argument
  * @return 1 - if file is empty or not found
+ * @return 0 - success
  */
 int
 file_read(void)
@@ -81,14 +147,6 @@ file_read(void)
 	char ch;/*!read char from file */
 	char *token;/*store the token pointer  */
 	char *attr_data[2]; /*!char pointer array to store attribute name and their values */
-        const char *attr_names[7]; /*!const char pointer array to store the types of attribute in file */
-	attr_names[0] = "Mom";
-	attr_names[1] = "ntype";
-	attr_names[2] = "state";
-	attr_names[3] = "pcpus";
-	attr_names[4] = "resources_available.arch";
-	attr_names[5] = "resources_available.mem";
-	attr_names[6] = "resources_available.ncpus";
 	int char_pos = 0, perms = 0; /**/
 	bool flag = true; /*flag is a bool variable which will be used to end the loop */
 	fp = fopen("pbsnodes.txt", "r"); /*!opening file in read mode. */
@@ -251,6 +309,14 @@ free_memory(void)
         }
 }
 
+void call(){	
+	int i=0;
+	while(attr_names[i] != NULL){
+		printf("\nVAlue = %s\n",attr_names[i]);
+		i++;
+	}
+}
+
 /**
  * @brief
  * main() - main function
@@ -263,21 +329,22 @@ main(void)
 {
 	int tmp_x;
 	pid_t pid = fork();/*!fork() is used to create a new process */
-        if(pid == 0){
+	if(pid == 0){
 		/*!child process */
-                tmp_x = execl("./python_file.py", "python_file.py", NULL);/*!execl()- initiates a new program in the same environment*/
-                if(tmp_x == -1){
-                        perror("./python_file.py");
+		tmp_x = execl("./python_file.py", "python_file.py", NULL);/*!execl()- initiates a new program in the same environment*/
+		if(tmp_x == -1){
+			perror("./python_file.py");
 			return 1;
-                }
-        }
-	else if (pid < 0){ /*!failed to fork */
-        	printf("Failed to fork\n");
-        	return 1;
-        }
-        else{
-		/*!parent process */
-                wait();
-        }
+		}
+	}
+	else if (pid < 0){ /*!failed to fork */	
+		printf("Failed to fork\n");
+		return 1;
+	}
+	else{
+		
+		printf("/*!parent process */");
+		wait();
+	}
 	return 0;
 }

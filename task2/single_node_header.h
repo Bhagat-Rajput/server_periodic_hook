@@ -18,6 +18,7 @@ struct node{
 typedef struct node node_t;
 node_t *get_head();
 node_t *get_node(char *attr_data[3]);
+extern int get_attr_list();
 extern int insert (char *attr_data[3]);
 extern int file_read();
 extern void free_memory();

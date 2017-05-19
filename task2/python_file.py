@@ -4,6 +4,11 @@
 import single_node_interface
 
 """ @brief
+	file_read() - read file and populate attribute list 
+"""
+single_node_interface.get_attr_list()
+
+""" @brief
 	file_read() - read file and fill nodes 
 """ 
 single_node_interface.file_read()
@@ -18,8 +23,13 @@ head = single_node_interface.node()
 """
 head = single_node_interface.get_head()
 while(head != None):
-	print"Attr_name = %s  Attr_value = %s  Resc_name = %s" %(head.node_attr_name,head.node_attr_value,head.node_resc_name)
-	head = head.node_next
+	if(head.node_resc_name == "NULL"):
+		print"Attr_name = %s  Attr_value = %s" %(head.node_attr_name,head.node_attr_value)
+		head = head.node_next
+	else:
+		attr_data = head.node_resc_name.split(".")
+		print"Attr_name = %s  Attr_value = %s  Resc_name = %s" %(attr_data[0],head.node_attr_value,attr_data[1])
+		head = head.node_next
 
 """ @brief
 	file_read() - free memory 
