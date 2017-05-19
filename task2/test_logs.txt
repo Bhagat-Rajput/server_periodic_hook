@@ -6,33 +6,48 @@ File is Empty
 [bhagat@blrpc676-centos7-1 task2]$ ./exec_single_node 
 Could not open file or File is missing
 
-[bhagat@blrpc676-centos7-1 task2]$ make clean
+[bhagat@bhagat task2]$ make clean
 rm -f *.o _*.* single_node_interface_wrap.*
 rm -f single_node_interface.py single_node_interface.pyc
 rm -f exec_single_node
 
-[bhagat@blrpc676-centos7-1 task2]$ make
+[bhagat@bhagat task2]$ make
 swig -python single_node_interface.i	
 gcc -c single_node_struct.c single_node_interface_wrap.c -fPIC -I /usr/include/python2.7/
 gcc -shared single_node_struct.o single_node_interface_wrap.o -o _single_node_interface.so
 gcc single_node_struct.c -o exec_single_node
 
-[bhagat@blrpc676-centos7-1 task2]$ ./exec_single_node 
-Attr_name = Mom_Name  Attr_value = blrpc676-centos7-1  Resc_name = NULL
-Attr_name = Mom  Attr_value = blrpc676-centos7-1  Resc_name = NULL
-Attr_name = ntype  Attr_value = PBS  Resc_name = NULL
-Attr_name = state  Attr_value = free  Resc_name = NULL
-Attr_name = pcpus  Attr_value = 4  Resc_name = NULL
-Attr_name = NULL  Attr_value = linux  Resc_name = resources_available.arch
-Attr_name = NULL  Attr_value = 3865552kb  Resc_name = resources_available.mem
-Attr_name = NULL  Attr_value = 4  Resc_name = resources_available.ncpus
-
-Attr_name = Mom_Name  Attr_value = blrpc676-centos7-2  Resc_name = NULL
-Attr_name = Mom  Attr_value = blrpc676-centos7-2  Resc_name = NULL
-Attr_name = ntype  Attr_value = PBS  Resc_name = NULL
-Attr_name = state  Attr_value = free  Resc_name = NULL
-Attr_name = pcpus  Attr_value = 4  Resc_name = NULL
-Attr_name = NULL  Attr_value = linux  Resc_name = resources_available.arch
-Attr_name = NULL  Attr_value = 3865552kb  Resc_name = resources_available.mem
-Attr_name = NULL  Attr_value = 10  Resc_name = resources_available.ncpus
-
+[bhagat@bhagat task2]$ ./exec_single_node 
+Attr_name = Mom_Name  Attr_value = blrpc676-centos7-1
+Attr_name = Mom  Attr_value = blrpc676-centos7-1
+Attr_name = ntype  Attr_value = PBS
+Attr_name = state  Attr_value = free
+Attr_name = pcpus  Attr_value = 2
+Attr_name = resources_available  Attr_value = linux  Resc_name = arch
+Attr_name = resources_available  Attr_value = blrpc676-centos7-1  Resc_name = host
+Attr_name = resources_available  Attr_value = 3865552kb  Resc_name = mem
+Attr_name = resources_available  Attr_value = 2  Resc_name = ncpus
+Attr_name = resources_available  Attr_value = blrpc676-centos7-1  Resc_name = vnode
+Attr_name = resources_assigned  Attr_value = 0kb  Resc_name = accelerator_memory
+Attr_name = resources_assigned  Attr_value = 0kb  Resc_name = mem
+Attr_name = resources_assigned  Attr_value = 0  Resc_name = naccelerators
+Attr_name = resources_assigned  Attr_value = 0  Resc_name = ncpus
+Attr_name = resources_assigned  Attr_value = 0kb  Resc_name = vmem
+Attr_name = resv_enable  Attr_value = True
+Attr_name = sharing  Attr_value = default_shared
+Attr_name = Mom  Attr_value = blrpc676-centos7-2
+Attr_name = ntype  Attr_value = PBS
+Attr_name = state  Attr_value = free
+Attr_name = pcpus  Attr_value = 3
+Attr_name = resources_available  Attr_value = linux  Resc_name = arch
+Attr_name = resources_available  Attr_value = blrpc676-centos7-2  Resc_name = host
+Attr_name = resources_available  Attr_value = 3865552kb  Resc_name = mem
+Attr_name = resources_available  Attr_value = 4  Resc_name = ncpus
+Attr_name = resources_available  Attr_value = blrpc676-centos7-2  Resc_name = vnode
+Attr_name = resources_assigned  Attr_value = 0kb  Resc_name = accelerator_memory
+Attr_name = resources_assigned  Attr_value = 0kb  Resc_name = mem
+Attr_name = resources_assigned  Attr_value = 0  Resc_name = naccelerators
+Attr_name = resources_assigned  Attr_value = 0  Resc_name = ncpus
+Attr_name = resources_assigned  Attr_value = 0kb  Resc_name = vmem
+Attr_name = resv_enable  Attr_value = True
+Attr_name = sharing  Attr_value = default_shared

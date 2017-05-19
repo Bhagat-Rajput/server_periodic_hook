@@ -20,11 +20,11 @@ blrpc676-centos7-2
      Mom = blrpc676-centos7-2
      ntype = PBS
      state = free
-     pcpus = 2
+     pcpus = 3
      resources_available.arch = linux
      resources_available.host = blrpc676-centos7-2
      resources_available.mem = 3865552kb
-     resources_available.ncpus = 2
+     resources_available.ncpus = 4
      resources_available.vnode = blrpc676-centos7-2
      resources_assigned.accelerator_memory = 0kb
      resources_assigned.mem = 0kb

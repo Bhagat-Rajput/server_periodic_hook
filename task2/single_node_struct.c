@@ -28,7 +28,7 @@ get_node(char *attr_data[3])
 	strncpy(new_node->node_resc_name, attr_data[2], sizeof(new_node->node_resc_name)); /* copying resource name */
 	new_node->node_prev = NULL;
 	new_node->node_next = NULL;
-	return new_node;
+return new_node;
 }
 
 /**
@@ -38,7 +38,7 @@ get_node(char *attr_data[3])
  * @return 0 - success
  * @return 1 - failure
  */
-int 
+int
 insert(char *attr_data[3]) 
 {
 	node_t *temp = head;
@@ -53,7 +53,7 @@ insert(char *attr_data[3])
 	while(temp->node_next != NULL) temp = temp->node_next;
 	temp->node_next = new_node;
 	new_node->node_prev = temp;
-	return 0;
+return 0;
 }
 
 /**
@@ -148,6 +148,7 @@ file_read(void)
 	char *token;/*store the token pointer  */
 	char *attr_data[2]; /*!char pointer array to store attribute name and their values */
 	int char_pos = 0, perms = 0; /**/
+	char *attr_type = "resources";
 	bool flag = true; /*flag is a bool variable which will be used to end the loop */
 	fp = fopen("pbsnodes.txt", "r"); /*!opening file in read mode. */
 	if(fp == NULL){
@@ -171,74 +172,8 @@ file_read(void)
                 }
 		else{
 			token = strtok(data,"="); /*!name and value tokenization */
-			while(token != NULL ){	
-				if(flag){
-					attr_data[0] = "Mom_Name";
-					attr_data[1] = token; 
-					attr_data[2] = "NULL";
-					if((insert(attr_data)) == 1){
-						return 1;
-					}
-					flag = false;
-				}
-				/*!if attribute name is Mom*/
-				else if(strncmp(data,attr_names[0],3) == 0){
-					if(perms == 0){
-						attr_data[0] = token;		
-						perms++;
-					}
-					else{
-						attr_data[1] = token;
-						attr_data[2] = "NULL";
-						if((insert(attr_data)) == 1){
-							return 1;
-						}
-					}
-				}
-				/*!if attribute name is ntype */
-				else if(strncmp(data,attr_names[1],5) == 0){
-					if(perms == 0){
-						attr_data[0] = token;		
-						perms++;
-					}
-					else{
-						attr_data[1] = token;
-						attr_data[2] = "NULL";
-						if((insert(attr_data)) == 1){
-							return 1;
-						}
-					}
-				}
-				/*!if attribute name is state*/
-				else if(strncmp(data,attr_names[2],5) == 0){
-					if(perms == 0){
-						attr_data[0] = token;		
-						perms++;
-					}
-					else{
-						attr_data[1] = token;
-						attr_data[2] = "NULL";
-						if((insert(attr_data)) == 1){
-							return 1;
-						}
-					}
-				}
-				/*!if attribute name is pcpus*/
-				else if(strncmp(data,attr_names[3],5) == 0){
-					if(perms == 0){
-						attr_data[0] = token;		
-						perms++;
-					}
-					else{
-						attr_data[1] = token;
-						attr_data[2] = "NULL";
-						if((insert(attr_data)) == 1){
-							return 1;
-						}
-					}
-				}
-				/*!if attribute name is resources_available.arch*/
-				else if(strncmp(data,attr_names[4],24) == 0){
+			while(token != NULL ){
+				if(strstr(data,attr_type)){ /*!resource*/
 					if(perms == 0){
 						attr_data[2] = token;		
 						perms++;
@@ -251,36 +186,32 @@ file_read(void)
 						}
 					}
 				}
-				/*!if attribute name is resources_available.mem*/
-				else if(strncmp(data,attr_names[5],23) == 0){
-					if(perms == 0){
-						attr_data[2] = token;		
-						perms++;
-					}
-					else{
-						attr_data[1] = token;
-						attr_data[0] = "NULL";
+				else{
+					if(flag){
+						attr_data[0] = "Mom_Name";
+						attr_data[1] = token; 
+						attr_data[2] = "NULL";
 						if((insert(attr_data)) == 1){
 							return 1;
 						}
-					}
-				}
-				/*!if attribute name is resources_available.ncpus*/
-				else if(strncmp(data,attr_names[6],24) == 0){
-					if(perms == 0){
-						attr_data[2] = token;		
-						perms++;
+						flag = false;
 					}
 					else{
-						attr_data[1] = token;
-						attr_data[0] = "NULL";
-						if((insert(attr_data)) == 1){
-							return 1;
+						if(perms == 0){
+							attr_data[0] = token;		
+							perms++;
 						}
-					}
+						else{
+							attr_data[1] = token;
+							attr_data[2] = "NULL";
+							if((insert(attr_data)) == 1){
+								return 1;
+							}
+						}
+					}	        
 				}	
 	 			token = strtok(NULL,"=");	
-			}
+			}/*--end while loop--*/
                       	char_pos = 0;
 			perms = 0;
                         memset(&data[0], 0, sizeof(data)); /*!fill data array with 0 */
@@ -309,14 +240,6 @@ free_memory(void)
         }
 }
 
-void call(){	
-	int i=0;
-	while(attr_names[i] != NULL){
-		printf("\nVAlue = %s\n",attr_names[i]);
-		i++;
-	}
-}
-
 /**
  * @brief
  * main() - main function
@@ -342,8 +265,7 @@ main(void)
 		return 1;
 	}
 	else{
-		
-		printf("/*!parent process */");
+		/*!parent process */
 		wait();
 	}
 	return 0;
