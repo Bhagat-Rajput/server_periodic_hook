@@ -6,265 +6,298 @@
 #include<unistd.h>
 #include"single_node_header.h"
 
-node_t *head; /*! head node */
-static char *attr_names[20]; /*!for storing attribute list*/
+node_t *phead; /* Pointer to node */
+static char *attr_names_g[20]; /* Store attribute names */
 
 /**
  * @brief
- * get_node() - create a new node and filled the node
- * @param[in] attr_data - char pointer array holding information to be inserted
- * @return struct node* - structure that contains file attributes
+ *      Create a new node and fills attribute data in node
+ * @param[in] attr_data - holds attribute data to be inserted
+ * @return struct node*
+ * @retval - new node
+ *
  */
 node_t * 
 get_node(char *attr_data[3]) 
 {
-	node_t *new_node = (node_t *)malloc(sizeof(node_t));/*!allocating memory to node*/
-	if(new_node == NULL){
+	/* Allocating memory to node */
+	node_t *new_node = (node_t *)malloc(sizeof(*new_node));
+	/* Check whether memory is allocated or not? */
+	if (new_node == NULL) {
 		printf("Couldn't allocate memory\n");
 		return NULL;
 	}
-	strncpy(new_node->node_attr_name, attr_data[0], sizeof(new_node->node_attr_name)); /*!copying attribute name */
-	strncpy(new_node->node_attr_value, attr_data[1], sizeof(new_node->node_attr_value)); /*copying attribute value */
-	strncpy(new_node->node_resc_name, attr_data[2], sizeof(new_node->node_resc_name)); /* copying resource name */
+	/* Copying attribute name */
+	strncpy(new_node->node_attr_name, attr_data[0], sizeof(new_node->node_attr_name));
+	/* Copying attribute value */
+	strncpy(new_node->node_attr_value, attr_data[1], sizeof(new_node->node_attr_value));
+	/* Copying resource name */
+	strncpy(new_node->node_resc_name, attr_data[2], sizeof(new_node->node_resc_name)); 
 	new_node->node_prev = NULL;
 	new_node->node_next = NULL;
-return new_node;
+	return new_node;
 }
 
 /**
  * @brief
- * insert() - inserts file records in data list
- * @param[in]  attr_data - char pointer array holding information to be inserted
- * @return 0 - success
- * @return 1 - failure
+ *      Insert attribute data into node and attached node at the end of the list 
+ * @param[in] attr_data - holds attribute data
+ * @return	int
+ * @retval	0 - on Success
+ * @retval	1 - on Error
+ *
  */
 int
 insert(char *attr_data[3]) 
 {
-	node_t *temp = head;
+	node_t *ptemp = phead;
+	/* Creating a new node and filled attribute data */
 	node_t *new_node = get_node(attr_data);
-	if(new_node == NULL){
+	/* Check whether new_node is created or not? */
+	if (new_node == NULL) {
+		/* Error occured */
 		return 1;
 	}
-	if(head == NULL){  /*for first node only */
-		head = new_node;
+	/* Check list is empty or not */
+	if (phead == NULL) {
+		/* first node */
+		phead = new_node;
 		return;
 	}
-	while(temp->node_next != NULL) temp = temp->node_next;
-	temp->node_next = new_node;
-	new_node->node_prev = temp;
-return 0;
+	while (ptemp->node_next != NULL) ptemp = ptemp->node_next;
+	ptemp->node_next = new_node;
+	new_node->node_prev = ptemp;
+	return 0;
 }
 
 /**
  * @brief
- * get_head() - return pointer to head node
- * @param[in]   void - No argument
- * @return struct node* - head node
+ *      Return pointer to head node
+ * @param[in] void - No argument
+ * @return struct node* 
+ * @retval - head node
+ *
  */
 node_t *
 get_head(void) 
 {
-	return head;
+	return phead;
 }
 
 /**
  * @brief
- * get_attr_list() - reading file attributes
- * @param[in]   void - No argument
- * @return 1 - if file is empty or not found
- * @return 0 - success
+ * 	Read resource and non-resource attributes from file
+ * @param[in] void - No argument
+ * @return - int  
+ * @retval 0 - on Success
+ * @retval 1 - on Failure
+ *
  */
 int
 get_attr_list(void)
 {
 	int i;
 	FILE *fp;
-	char data [50]; /*!store char from file */
-	char ch;/*!read char from file */
-	char *token;/*store the token pointer  */
-	int char_pos = 0, attr_pos = 0; /**/
-	bool flag = true; /*flag is a bool variable which will be used to end the loop */
-	fp = fopen("pbsnodes.txt", "r"); /*!opening file in read mode. */
-	if(fp == NULL){
-		printf("Could not open file or File is missing\n");
+	char data [50]; /* Store char from file */
+	char ch;/*! Read char from file */
+	char *token;/* Store the token pointer  */
+	int tmp_char_pos = 0, tmp_attr_pos = 0;
+	bool flag = true; /* flag is a bool variable which will be used to end the loop */
+	/* Opening file in read mode. */	
+	fp = fopen("pbsnodes.txt", "r");
+	/* Check whether file is present or not? */ 
+	if (fp == NULL) {
+		printf("Could not open attribute file or File is missing\n");
+		/* Error occured */
 		return 1;
 	}
-	fseek(fp ,0 ,SEEK_END);/*!sets the file pointer position to the given offset */
-	if(ftell(fp) == 0){
-		printf("File is Empty\n");
+	/* Set the file pointer position to the given offset */
+	fseek(fp, 0, SEEK_END);
+	/* To check file is empty or not? */	
+	if (ftell(fp) == 0) {
+		printf("Attribute file is Empty\n");
+		/* Error occured */
 		return 1;
 	}
-	rewind(fp); /*!sets the file pointer position to the beginning of the file */
-	memset(&data[0], 0, sizeof(data)); /*!fill data array with 0*/
-	while ((ch = getc(fp)) != EOF){
-		if(ch == ' '){
+	/* Set the file pointer position to the beginning of the file */
+	rewind(fp);
+	/* Fill data array with 0 */
+	memset(&data[0], 0, sizeof(data));
+	do {
+		if (ch == ' ') {
 			continue;
-		}
-		else if(ch != '\n'){
-			data[char_pos] = ch;
-			char_pos++;
-		}
-		else{
-			if(strchr(data,'=') != NULL){
-				token = strtok(data,"="); /*!name and value tokenization */
-				while(token != NULL ){	
-					if(flag){
-						for ( i = 0; i < attr_pos; i++ ){ /*checks attribute is present in attribute list or not */
-							if ( strcmp(attr_names[i],token) == 0 ){
+		} else if (ch != '\n') {
+			data[tmp_char_pos] = ch;
+			tmp_char_pos++;
+		} else {
+			if (strchr(data, '=') != NULL) {
+				/* Attribute name and value tokenization */
+				token = strtok(data, "="); 
+				do {	
+					if (flag) {
+						/* Check attribute name is already present in attribute list or not? */
+						for (i = 0; i < tmp_attr_pos; i++) { 
+							if (strcmp(attr_names_g[i], token) == 0 ) {
 								goto skip;
 							}
-						}	
-				 		attr_names[attr_pos]=(char *)malloc(25*sizeof(char));
-				 		strcpy(attr_names[attr_pos],token);
-				 		attr_pos++;
+						}
+						/* Allocating memory to attribute names */
+				 		attr_names_g[tmp_attr_pos]=(char *)malloc(25 * sizeof(attr_names_g[tmp_attr_pos]));
+				 		/* Add name to the attribute list */
+						strcpy(attr_names_g[tmp_attr_pos], token);
+				 		tmp_attr_pos++;
 				 		flag = false;
 					}
-					token = strtok(NULL,"=");	
-				}
+					token = strtok(NULL, "=");	
+				} while (token != NULL);
 				flag = true;
 			}
-			skip:char_pos = 0;
-			memset(&data[0], 0, sizeof(data)); /*!fill data array with 0 */
+			skip:tmp_char_pos = 0;
+			/* Fill data array with 0 */
+			memset(&data[0], 0, sizeof(data));
 		}
-	}
-	fclose(fp);/*!file pointer closed */
-return 0;
+	} while ((ch = getc(fp)) != EOF);
+	/*! File pointer closed */
+	fclose(fp);
+	return 0;
 }
 
 /**
  * @brief
- * file_read() - reading file data
- * @param[in]   void - No argument
- * @return 1 - if file is empty or not found
- * @return 0 - success
+ * 	Reading data from file
+ * @param[in] void - No argument
+ * @return - int
+ * @retval 0 - on Success
+ * @retval 1 - on Failure
+ *
  */
 int
 file_read(void)
 {
 	FILE *fp;
-	static char data [50]; /*!store char from file */
-	char ch;/*!read char from file */
-	char *token;/*store the token pointer  */
-	char *attr_data[2]; /*!char pointer array to store attribute name and their values */
-	int char_pos = 0, perms = 0; /**/
+	static char data [50]; /* Store char from file */
+	char ch; /* Read char from file */
+	char *token; /* Store the token pointer */
+	char *attr_data[2]; /* Hold attribute name,resource name and their values */
+	int tmp_char_pos = 0, tmp_perms = 0;
 	char *attr_type = "resources";
-	bool flag = true; /*flag is a bool variable which will be used to end the loop */
-	fp = fopen("pbsnodes.txt", "r"); /*!opening file in read mode. */
-	if(fp == NULL){
-		printf("Could not open file or File is missing\n");
+	/* Opening file in read mode. */
+	fp = fopen("pbsnodes.txt", "r");
+	/* Check whether file is present or not? */
+	if (fp == NULL) {
+		printf("Could not open pbsnodes file or File is missing\n");
 		return 1;
 	}
-	fseek(fp ,0 ,SEEK_END);/*!sets the file pointer position to the given offset */
-	if(ftell(fp) == 0){
-		printf("File is Empty\n");
+	/* Set the file pointer position to the given offset */
+	fseek(fp ,0 , SEEK_END);
+	/* To check file is empty or not? */
+	if (ftell(fp) == 0) {
+		printf("pbsnodes file is Empty\n");
+		/* Error occured */
 		return 1;
 	}
-	rewind(fp); /*!sets the file pointer position to the beginning of the file */
-        memset(&data[0], 0, sizeof(data)); /*!fill data array with 0*/
-        while ((ch = getc(fp)) != EOF){
-                if(ch == ' '){
+	/* Set the file pointer position to the beginning of the file */
+	rewind(fp);
+	/* Fill data array with 0 */
+        memset(&data[0], 0, sizeof(data));
+        do {
+                if (ch == ' ') {
                         continue;
-		}
-		else if(ch != '\n'){
-                        data[char_pos] = ch;
-                        char_pos++;
-                }
-		else{
-			token = strtok(data,"="); /*!name and value tokenization */
-			while(token != NULL ){
-				if(strstr(data,attr_type)){ /*!resource*/
-					if(perms == 0){
+		} else if (ch != '\n') {
+                        data[tmp_char_pos] = ch;
+                        tmp_char_pos++;
+                } else {
+			/* Attribute name and value tokenization */
+			token = strtok(data, "=");
+			do {
+				/* Resource attributes */
+				if (strstr(data, attr_type)) {
+					if (tmp_perms == 0) {
 						attr_data[2] = token;		
-						perms++;
-					}
-					else{
+						tmp_perms++;
+					} else {
 						attr_data[1] = token;
 						attr_data[0] = "NULL";
-						if((insert(attr_data)) == 1){
+						if ((insert(attr_data)) == 1) {
+							/* Error occured */
 							return 1;
 						}
 					}
-				}
-				else{
-					if(flag){
-						attr_data[0] = "Mom_Name";
-						attr_data[1] = token; 
+				  /* Non-resource attributes */
+				} else {					
+					if (tmp_perms == 0) {
+						attr_data[0] = token;		
+						tmp_perms++;
+					} else {
+						attr_data[1] = token;
 						attr_data[2] = "NULL";
-						if((insert(attr_data)) == 1){
+						if ((insert(attr_data)) == 1) {
+							/* Error occured */
 							return 1;
 						}
-						flag = false;
 					}
-					else{
-						if(perms == 0){
-							attr_data[0] = token;		
-							perms++;
-						}
-						else{
-							attr_data[1] = token;
-							attr_data[2] = "NULL";
-							if((insert(attr_data)) == 1){
-								return 1;
-							}
-						}
-					}	        
-				}	
-	 			token = strtok(NULL,"=");	
-			}/*--end while loop--*/
-                      	char_pos = 0;
-			perms = 0;
-                        memset(&data[0], 0, sizeof(data)); /*!fill data array with 0 */
+				}	        	
+	 			token = strtok(NULL, "=");	
+			} while (token != NULL );
+                      	tmp_char_pos = 0;
+			tmp_perms = 0;
+			/* Fill data array with 0 */
+                        memset(&data[0], 0, sizeof(data)); 
                 }
-        }
-        fclose(fp);/*!file pointer closed */
-return 0;
+        } while ((ch = getc(fp)) != EOF);
+	/* File pointer closed */
+        fclose(fp);
+	return 0;
 }
 
 /**
  * @brief
- * free_memory() - freeing the memory
- * @param[in]   void - No argument
+ * 	Freeing the allocated memory
+ * @param[in] void - No argument
  * @return void
+ *
  * */
 void
 free_memory(void)
 {
-	node_t *temp, *curr;
-        curr = get_head();
-        while(curr != NULL){
-        	temp = curr;
-                curr = curr->node_next;
-                free(temp);
-                temp = NULL;
-        }
+	node_t *ptemp, *pcurr;
+        pcurr = get_head();
+        do {
+        	ptemp = pcurr;
+                pcurr = pcurr->node_next;
+                free(ptemp);
+                ptemp = NULL;
+        } while (pcurr != NULL);
 }
 
 /**
  * @brief
  * main() - main function
- * @param[in]   void - No argument
- * @return 0 - for success
- * @return 1 - for failure
+ * @param[in] void - No argument
+ * @retval int
+ * @return 0 - on Success
+ * @return 1 - on Failure
+ *
  */
 int 
 main(void)
 {
 	int tmp_x;
-	pid_t pid = fork();/*!fork() is used to create a new process */
-	if(pid == 0){
+	pid_t pid = fork(); /*!fork() is used to create a new process */
+	if (pid == 0) {
 		/*!child process */
 		tmp_x = execl("./python_file.py", "python_file.py", NULL);/*!execl()- initiates a new program in the same environment*/
-		if(tmp_x == -1){
+		if (tmp_x == -1) {
 			perror("./python_file.py");
+			/* Error occured */
 			return 1;
 		}
-	}
-	else if (pid < 0){ /*!failed to fork */	
+	  /*! if failed to fork */
+	} else if (pid < 0) {
 		printf("Failed to fork\n");
+		/* Error occured */
 		return 1;
-	}
-	else{
+	} else {
 		/*!parent process */
 		wait();
 	}
